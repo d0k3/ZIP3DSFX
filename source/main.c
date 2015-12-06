@@ -1,7 +1,4 @@
 #include <3ds.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdarg.h>
 #include <sys/dirent.h>
 #include "archive_zip.h"
 #define MINIZ_HEADER_FILE_ONLY
