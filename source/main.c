@@ -25,7 +25,6 @@ void rmkdir (const char* path) {
 }
 
 s32 main (int argc, char **argv) {
-    char path[256] = { 0 };
     mz_zip_archive mz_archive;
     mz_uint n_files;
        
