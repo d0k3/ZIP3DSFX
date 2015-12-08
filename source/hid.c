@@ -19,9 +19,3 @@ u32 wait_key (void) {
 	}
 	return kDown;
 }
-
-/* convenience function */
-void wait_any_key (void) {
-	printf("\n\nPress key to continue\n");
-	wait_key();
-}
