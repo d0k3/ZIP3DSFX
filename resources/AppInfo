@@ -1,3 +1,9 @@
+#---------------------------------------------------------------------------------
+# APP_TITLE: Name of the homebrew app, also name of folder and .3DSX/.SMDH
+# APP_DESCRIPTION: Description of the homebrew app in HB launcher
+# APP_AUTHOR: Author of the homebrew app, also display in HB launcher
+#---------------------------------------------------------------------------------
+
 APP_TITLE = ZIP3DSFX
 APP_DESCRIPTION = 3DS SFX archive
 APP_AUTHOR = d0k3

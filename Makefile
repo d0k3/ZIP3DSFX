@@ -42,6 +42,10 @@ CFLAGS	:=	-g -Wall -Wextra -O3 -mword-relocations \
 
 CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS -DARM_ARCH -w
 
+ifdef SFX_STUB
+CFLAGS	+=	-DSFX_STUB
+endif
+
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11 -w
 
 ASFLAGS	:=	-g $(ARCH)
@@ -75,7 +79,9 @@ export DEPSDIR	:=	$(CURDIR)/$(BUILD)
 CFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.c)))
 CPPFILES	:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.cpp)))
 SFILES		:=	$(foreach dir,$(SOURCES),$(notdir $(wildcard $(dir)/*.s)))
-BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/*.*)))
+ifndef SFX_STUB
+BINFILES	:=	$(foreach dir,$(DATA),$(notdir $(wildcard $(dir)/archive.zip)))
+endif
 
 #---------------------------------------------------------------------------------
 # use CXX for linking C++ projects, CC for standard C
@@ -102,19 +108,26 @@ export LIBPATHS	:=	$(foreach dir,$(LIBDIRS),-L$(dir)/lib)
 
 export APP_ICON := $(TOPDIR)/resources/icon.png
 
-.PHONY: $(BUILD) clean all
+.PHONY: $(BUILD) clean all sfx_stub sfx_hard sfx_std
 
 #---------------------------------------------------------------------------------
-all: $(OUTPUT_D) $(BUILD)
+all: sfx_std
 
-$(OUTPUT_D):
-	@[ -d $@ ] || mkdir -p $@
-	
-$(BUILD):
-	@echo $(SFILES)
-	@[ -d $@ ] || mkdir -p $@
+common:
+	@[ -d $(OUTPUT_D) ] || mkdir -p $(OUTPUT_D)
+	@[ -d $(BUILD) ] || mkdir -p $(BUILD)
+
+sfx_std: common
 	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
-	@rm -fr $(OUTPUT).elf
+
+sfx_hard: sfx_std
+
+sfx_stub: common
+	@-make --no-print-directory clean
+	@make --no-print-directory SFX_STUB=1
+	@echo "#define SELF_SIZE " `wc -c $(OUTPUT).3dsx|cut -f1 -d\ ` >include/selfsize.h
+	@-make --no-print-directory clean
+	@make --no-print-directory SFX_STUB=1
 
 #---------------------------------------------------------------------------------
 clean:
@@ -141,7 +154,7 @@ $(OUTPUT).elf	:	$(OFILES)
 #---------------------------------------------------------------------------------
 # you need a rule like this for each extension you use as binary data
 #---------------------------------------------------------------------------------
-archive.zip.o	:	archive.zip
+%.zip.o	:	%.zip
 #---------------------------------------------------------------------------------
 	@echo $(notdir $<)
 	@$(bin2o)
