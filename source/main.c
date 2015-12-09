@@ -147,8 +147,8 @@ s32 main (int argc, char **argv) {
                printf(" ! ERROR in internal ZIP structure!");
                break;
             }
-            snprintf(displayname, 36, "%-.*s%s",
-                (strnlen(mz_stat.m_filename, 40) > 36) ? 33 : 36, mz_stat.m_filename, (strnlen(mz_stat.m_filename, 40) > 36) ? "..." : "");
+            snprintf(displayname, 37, "%-.*s%s",
+                (strnlen(mz_stat.m_filename, 40) > 36) ? 32 : 36, mz_stat.m_filename, (strnlen(mz_stat.m_filename, 40) > 36) ? "..." : "");
             printf(" - %s\r", displayname);
             #ifdef NO_CREATE_DIRS
             if (mz_zip_reader_is_file_a_directory(&mz_archive, n) || !dir_exists(mz_stat.m_filename)) {
