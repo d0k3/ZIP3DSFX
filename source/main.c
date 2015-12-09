@@ -4,9 +4,6 @@
 #include "hid.h"
 #define MINIZ_HEADER_FILE_ONLY
 #include "miniz.c"
-#ifdef FORCE_ROOT
-#include <sys/unistd.h>
-#endif
 #ifndef SFX_STUB
 #include "archive_zip.h"
 #else
@@ -113,7 +110,6 @@ s32 main (int argc, char **argv) {
        
     // Initialize GFX services / console
     gfxInitDefault();
-    gfxSwapBuffers();
     consoleInit(GFX_BOTTOM, NULL );
 
     // Say hello
@@ -122,23 +118,27 @@ s32 main (int argc, char **argv) {
     #ifdef SFX_STUB
     u8* archive_zip = NULL;
     u32 archive_zip_size = 0;
+    #ifndef FORCE_MY_NAME
     if (argc < 1) {
         printf("\n ! ERROR loader not compatible!");
     } else {
         archive_zip_size = read_file_to_mem(&archive_zip, *argv, SELF_SIZE);
     }
+    #else
+    archive_zip_size = read_file_to_mem(&archive_zip, FORCE_MY_NAME, SELF_SIZE);
     #endif
     #endif
     
     // init internal ZIP archive
     memset(&mz_archive, 0, sizeof(mz_archive));
-    if (!mz_zip_reader_init_mem(&mz_archive, archive_zip, archive_zip_size, 0) || !(n_files = mz_zip_reader_get_num_files(&mz_archive))) {
+    if (!archive_zip_size || !mz_zip_reader_init_mem(&mz_archive, archive_zip, archive_zip_size, 0)) {
         printf("\n ! ERROR opening internal archive!");
     } else {
         u32 n;
         u32 n_x = 0;
         u32 n_s = 0;
         u32 n_d = 0;
+        n_files = mz_zip_reader_get_num_files(&mz_archive);
         for (n = 0; n < n_files; n++) {
             char displayname[40];
             printf("\n");
@@ -178,7 +178,13 @@ s32 main (int argc, char **argv) {
             }
             #endif
             if (!mz_zip_reader_is_file_a_directory(&mz_archive, n)) {
-                if (!mz_zip_reader_extract_to_file(&mz_archive, n, mz_stat.m_filename, 0)) {
+                #ifdef FORCE_ROOT
+                char filename[256];
+                snprintf(filename, 256, "/%s", mz_stat.m_filename);
+                #else
+                char* filename = mz_stat.m_filename;
+                #endif
+                if (!mz_zip_reader_extract_to_file(&mz_archive, n, filename, 0)) {
                     printf("\n ! ERROR extracting file!");
                     break;
                 }
