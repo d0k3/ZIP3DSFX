@@ -123,14 +123,11 @@ s32 main (int argc, char **argv) {
     u8* archive_zip = NULL;
     u32 archive_zip_size = 0;
     if (argc < 1) {
-        printf("\n ! ERROR loader not compatible with stub!");
+        printf("\n ! ERROR loader not compatible!");
     } else {
         archive_zip_size = read_file_to_mem(&archive_zip, *argv, SELF_SIZE);
     }
     #endif
-    
-    #ifdef FORCE_ROOT
-    chdir("/");
     #endif
     
     // init internal ZIP archive
@@ -143,16 +140,19 @@ s32 main (int argc, char **argv) {
         u32 n_s = 0;
         u32 n_d = 0;
         for (n = 0; n < n_files; n++) {
+            char displayname[40];
             printf("\n");
             mz_zip_archive_file_stat mz_stat;
             if (!mz_zip_reader_file_stat(&mz_archive, n, &mz_stat)) {
                printf(" ! ERROR in internal ZIP structure!");
                break;
             }
-            printf(" - %s\r", mz_stat.m_filename);
+            snprintf(displayname, 36, "%-.*s%s",
+                (strnlen(mz_stat.m_filename, 40) > 36) ? 33 : 36, mz_stat.m_filename, (strnlen(mz_stat.m_filename, 40) > 36) ? "..." : "");
+            printf(" - %s\r", displayname);
             #ifdef NO_CREATE_DIRS
             if (mz_zip_reader_is_file_a_directory(&mz_archive, n) || !dir_exists(mz_stat.m_filename)) {
-                printf(" S %s\r", mz_stat.m_filename);
+                printf(" S %s\r", displayname);
                 n_s++;
                 continue;
             }
@@ -160,18 +160,18 @@ s32 main (int argc, char **argv) {
             #ifndef OVERWRITE_ALWAYS
             if (file_exists(mz_stat.m_filename)) {
                 #ifndef OVERWRITE_NEVER
-                printf(" ? %s\n", mz_stat.m_filename);
+                printf(" ? %s\n", displayname);
                 printf("   <A> overwrite <B> skip\r");
                 u32 last_key;
                 for (last_key = 0; !(last_key & (KEY_A|KEY_B)); last_key = wait_key());
                 printf("                         \r");
                 if (last_key != KEY_A) {
-                    printf(" S %s\r", mz_stat.m_filename);
+                    printf(" S %s\r", displayname);
                     n_s++;
                     continue;
-                } else printf(" - %s\r", mz_stat.m_filename);
+                } else printf(" - %s\r", displayname);
                 #else
-                printf(" S %s\r", mz_stat.m_filename);
+                printf(" S %s\r", displayname);
                 n_s++;
                 continue;
                 #endif
@@ -182,10 +182,10 @@ s32 main (int argc, char **argv) {
                     printf("\n ! ERROR extracting file!");
                     break;
                 }
-                printf(" X %s\r", mz_stat.m_filename);
+                printf(" X %s\r", displayname);
                 n_x++;
             } else {
-                printf(" D %s\r", mz_stat.m_filename);
+                printf(" D %s\r", displayname);
                 n_d++;
                 rmkdir(mz_stat.m_filename);
             }
