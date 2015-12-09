@@ -4,7 +4,7 @@
 // ----------------------------
 
 // This has to be #defined, it contains the current version number.
-#define ZIP3DSFX_VER 5
+#define ZIP3DSFX_VER 6
 
 // Only one of these two can be #defined at one time
 // If both are activated, behaviour is undefined
@@ -25,4 +25,4 @@
 // If #defined this has to be set to something. Helps in
 // cases where sfx_stub would otherwise not be compatible.
 // Only does something when ZIP3DSFX is built as sfx_stub
-#define FORCE_MY_NAME "boot.3dsx"
+// #define FORCE_MY_NAME "boot.3dsx"
