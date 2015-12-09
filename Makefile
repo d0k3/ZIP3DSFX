@@ -36,8 +36,8 @@ include $(TOPDIR)/resources/AppInfo
 #---------------------------------------------------------------------------------
 ARCH	:=	-march=armv6k -mtune=mpcore -mfloat-abi=hard
 
-CFLAGS	:=	-g -Wall -Wextra -O3 -mword-relocations \
-			-fomit-frame-pointer -ffast-math \
+CFLAGS	:=	-g -Wall -Wextra -Os -mword-relocations \
+			-fomit-frame-pointer -fno-strict-aliasing -ffast-math \
 			$(ARCH)
 
 CFLAGS	+=	$(INCLUDE) -DARM11 -D_3DS -DARM_ARCH -w
