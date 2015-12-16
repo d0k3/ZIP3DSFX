@@ -46,6 +46,10 @@ ifdef SFX_STUB
 CFLAGS	+=	-DSFX_STUB
 endif
 
+ifdef CONFIG
+CFLAGS	+=	-DCONFIG=$(CONFIG)
+endif
+
 CXXFLAGS	:= $(CFLAGS) -fno-rtti -fno-exceptions -std=gnu++11 -w
 
 ASFLAGS	:=	-g $(ARCH)
@@ -118,7 +122,7 @@ common:
 	@[ -d $(BUILD) ] || mkdir -p $(BUILD)
 
 sfx_std: common
-	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile
+	@make --no-print-directory -C $(BUILD) -f $(CURDIR)/Makefile CONFIG=$(CONFIG)
 
 sfx_hard: sfx_std
 
