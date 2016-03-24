@@ -41,10 +41,9 @@ bool dir_exists(const char* path) {
 #ifndef OVERWRITE_ALWAYS
 // checks if a file exists
 bool file_exists (const char* path) {
-    bool res = false;
     FILE* fp;
     
-    res = (fp = fopen(path, "rb"));
+    bool res = (fp = fopen(path, "rb"));
     if (fp) fclose(fp);
     
     return res;
@@ -106,7 +105,6 @@ u32 read_file_to_mem (u8** data, const char* path, u32 offset) {
 
 s32 main (int argc, char **argv) {
     mz_zip_archive mz_archive;
-    mz_uint n_files;
        
     // Initialize GFX services / console
     gfxInitDefault();
@@ -138,7 +136,7 @@ s32 main (int argc, char **argv) {
         u32 n_x = 0;
         u32 n_s = 0;
         u32 n_d = 0;
-        n_files = mz_zip_reader_get_num_files(&mz_archive);
+        mz_uint n_files = mz_zip_reader_get_num_files(&mz_archive);
         for (n = 0; n < n_files; n++) {
             char displayname[40];
             printf("\n");
